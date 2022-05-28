@@ -1,2 +1,3 @@
 # zdpgo_ftp
-FTP文件上传和下载
+FTP服务，FTP文件上传和下载
+

@@ -97,7 +97,7 @@ type Response struct {
 	closed bool
 }
 
-// Dial connects to the specified address with optional options
+// Dial 连接到指定的FTP服务
 func Dial(addr string, options ...DialOption) (*ServerConn, error) {
 	do := &dialOptions{}
 	for _, option := range options {
