@@ -31,3 +31,18 @@ func TestClient_Upload(t *testing.T) {
 	err := c.Upload("README.md", "README.md")
 	assert.NoError(t, err)
 }
+
+func TestClient_Download(t *testing.T) {
+	c := getClient()
+	assert.NotEqual(t, c, nil)
+	err := c.Download("README.md", "README1.md")
+	assert.NoError(t, err)
+}
+
+func TestClient_DownloadToBytes(t *testing.T) {
+	c := getClient()
+	assert.NotEqual(t, c, nil)
+	toBytes, err := c.DownloadToBytes("README.md")
+	assert.NoError(t, err)
+	assert.NotEqual(t, len(toBytes), 0)
+}

@@ -34,6 +34,18 @@ func NewWithConfig(config *Config) *Ftp {
 	f.Log = zdpgo_log.NewWithDebug(config.Debug, config.LogFilePath)
 
 	// 配置
+	if config.WorkDir == "" {
+		config.WorkDir = ".zdpgo_ftp_files"
+	}
+	if config.Port == 0 {
+		config.Port = 34333
+	}
+	if config.Username == "" {
+		config.Username = "zhangdapeng"
+	}
+	if config.Password == "" {
+		config.Password = "zhangdapeng"
+	}
 	f.Config = config
 
 	// 返回
@@ -79,4 +91,12 @@ func (f *Ftp) GetClient() (*Client, error) {
 
 	// 返回
 	return result, nil
+}
+
+// GetServer 获取服务端对象
+func (f *Ftp) GetServer() *Server {
+	return &Server{
+		Config: f.Config,
+		Log:    f.Log,
+	}
 }
