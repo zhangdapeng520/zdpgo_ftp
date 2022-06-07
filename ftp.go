@@ -9,6 +9,7 @@ package zdpgo_ftp
 */
 
 import (
+	"crypto/md5"
 	"fmt"
 	"github.com/zhangdapeng520/zdpgo_ftp/ftp"
 	"github.com/zhangdapeng520/zdpgo_log"
@@ -99,4 +100,11 @@ func (f *Ftp) GetServer() *Server {
 		Config: f.Config,
 		Log:    f.Log,
 	}
+}
+
+// GetMd5 获取数据的MD5值
+func (f *Ftp) GetMd5(data []byte) string {
+	has := md5.Sum(data)
+	result := fmt.Sprintf("%x", has) //将[]byte转成16进制
+	return result
 }

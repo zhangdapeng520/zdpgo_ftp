@@ -1,7 +1,9 @@
 package zdpgo_ftp
 
 import (
+	"crypto/md5"
 	"errors"
+	"fmt"
 	"github.com/zhangdapeng520/zdpgo_ftp/ftp"
 	"github.com/zhangdapeng520/zdpgo_log"
 	"io"
@@ -71,7 +73,7 @@ func (c *Client) Upload(srcPath, destPath string) error {
 }
 
 // UploadAndCheckMd5 上传文件并校验MD5值
-func (c *Client) UploadAndCheckMd5(srcPath, destPath string) error {
+func (c *Client) UploadAndCheckMd5(srcPath, destPath string) bool {
 	// 切割目标路径
 	destDir, destFileName := filepath.Split(destPath)
 
@@ -79,20 +81,20 @@ func (c *Client) UploadAndCheckMd5(srcPath, destPath string) error {
 	currentDir, err := c.CurrentDir()
 	if err != nil {
 		c.Log.Error("获取当前工作目录失败", "error", err)
-		return err
+		return false
 	}
 	if destDir != "" && currentDir != destDir {
 		err = c.MakeDir(destDir) // 不存在则创建目录
 		if err != nil {
 			c.Log.Error("创建目标目录失败", "error", err, "currentDir", currentDir, "destDir", destDir)
-			return err
+			return false
 		}
 
 		// 切换工作目录
 		err = c.ChangeDir(destDir)
 		if err != nil {
 			c.Log.Error("切换工作目录失败", "error", err, "destDir", destDir)
-			return err
+			return false
 		}
 	}
 
@@ -100,16 +102,37 @@ func (c *Client) UploadAndCheckMd5(srcPath, destPath string) error {
 	file, err := os.Open(srcPath)
 	if err != nil {
 		c.Log.Error("打开本地文件失败", "error", err, "srcPath", srcPath)
-		return err
+		return false
 	}
 	defer file.Close()
+
+	// 获取md5
+	srcFileData, err := ioutil.ReadFile(srcPath)
+	if err != nil {
+		c.Log.Error("读取源文件数据失败", "error", err)
+		return false
+	}
+	srcFileMd5 := c.GetMd5(srcFileData)
+
+	// 存储文件
 	err = c.Store(destFileName, file)
 	if err != nil {
 		c.Log.Error("存储文件失败", "error", err, "destFileName", destFileName)
+		return false
 	}
 
+	// 下载文件
+	destFileBytes, err := c.DownloadToBytes(destFileName)
+	if err != nil {
+		c.Log.Error("下载目标文件失败", "error", err, "destFileName", destFileName)
+		return false
+	}
+
+	// 比较
+	flag := srcFileMd5 == c.GetMd5(destFileBytes)
+
 	// 返回
-	return nil
+	return flag
 }
 
 // ChangeDir 切换工作目录
@@ -196,4 +219,11 @@ func (c *Client) Retr(filePath string) ([]byte, error) {
 // DownloadToBytes 下载文件并转换我bytes数组
 func (c *Client) DownloadToBytes(filePath string) ([]byte, error) {
 	return c.Retr(filePath)
+}
+
+// GetMd5 获取数据的MD5值
+func (c *Client) GetMd5(data []byte) string {
+	has := md5.Sum(data)
+	result := fmt.Sprintf("%x", has) //将[]byte转成16进制
+	return result
 }

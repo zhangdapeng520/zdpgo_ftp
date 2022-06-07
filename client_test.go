@@ -32,6 +32,21 @@ func TestClient_Upload(t *testing.T) {
 	assert.NoError(t, err)
 }
 
+func TestClient_UploadAndCheckMd5(t *testing.T) {
+	f := NewWithConfig(&Config{
+		Debug:    true,
+		Host:     "localhost",
+		Port:     2122,
+		Username: "admin",
+		Password: "admin",
+	})
+	client, err := f.GetClient()
+	assert.NoError(t, err)
+
+	flag := client.UploadAndCheckMd5("README.md", "README1.md")
+	assert.Equal(t, flag, true)
+}
+
 func TestClient_Download(t *testing.T) {
 	c := getClient()
 	assert.NotEqual(t, c, nil)
