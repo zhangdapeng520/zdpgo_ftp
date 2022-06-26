@@ -21,18 +21,15 @@ type Ftp struct {
 	Log    *zdpgo_log.Log
 }
 
-func New() *Ftp {
-	return NewWithConfig(&Config{})
+func New(log *zdpgo_log.Log) *Ftp {
+	return NewWithConfig(&Config{}, log)
 }
 
-func NewWithConfig(config *Config) *Ftp {
+func NewWithConfig(config *Config, log *zdpgo_log.Log) *Ftp {
 	f := &Ftp{}
 
 	// 日志
-	if config.LogFilePath == "" {
-		config.LogFilePath = "logs/zdpgo/zdpgo_ftp.log"
-	}
-	f.Log = zdpgo_log.NewWithDebug(config.Debug, config.LogFilePath)
+	f.Log = log
 
 	// 配置
 	if config.WorkDir == "" {

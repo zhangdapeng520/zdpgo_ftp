@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/zhangdapeng520/zdpgo_ftp"
+	"github.com/zhangdapeng520/zdpgo_log"
 )
 
 /*
@@ -20,7 +21,7 @@ func main() {
 		Port:     2122,
 		Username: "admin",
 		Password: "admin",
-	})
+	}, zdpgo_log.Tmp)
 	client, err := f.GetClient()
 	if err != nil {
 		panic(err)

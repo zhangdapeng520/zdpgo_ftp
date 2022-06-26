@@ -1,6 +1,9 @@
 package main
 
-import "github.com/zhangdapeng520/zdpgo_ftp"
+import (
+	"github.com/zhangdapeng520/zdpgo_ftp"
+	"github.com/zhangdapeng520/zdpgo_log"
+)
 
 func main() {
 	f := zdpgo_ftp.NewWithConfig(&zdpgo_ftp.Config{
@@ -9,7 +12,7 @@ func main() {
 		Port:     2122,
 		Username: "admin",
 		Password: "admin",
-	})
+	}, zdpgo_log.Tmp)
 	s := f.GetServer()
 	err := s.Run()
 	if err != nil {
